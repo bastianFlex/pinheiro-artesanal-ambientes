@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,26 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				wood: {
+					DEFAULT: '#8B4513',
+					light: '#D7CCC8',
+					dark: '#5D4037',
+					tan: '#D2B48C',
+					beech: '#F5DEB3'
+				},
+				forest: {
+					DEFAULT: '#2E7D32',
+					light: '#4CAF50',
+					dark: '#1B5E20'
 				}
+			},
+			backgroundImage: {
+				'wood-texture': "url('/wood-texture.jpg')",
+			},
+			fontFamily: {
+				serif: ['Playfair Display', 'Georgia', 'serif'],
+				sans: ['Inter', 'system-ui', 'sans-serif']
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

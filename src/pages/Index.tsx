@@ -8,6 +8,7 @@ import ParallaxTestimonials from "../components/ParallaxTestimonials";
 import ModernProcess from "../components/ModernProcess";
 import CtaSection from "../components/CtaSection";
 import ModernFooter from "../components/ModernFooter";
+import ClientFeedbackSection from "../components/ClientFeedbackSection";
 import { AnimatePresence } from "framer-motion";
 
 const Index = () => {
@@ -38,6 +39,7 @@ const Index = () => {
         <ModernAbout />
         <AmbientGallery />
         <ParallaxTestimonials />
+        <ClientFeedbackSection />
         <ModernProcess />
         <CtaSection />
         <ModernFooter />

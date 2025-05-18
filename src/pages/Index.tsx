@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import ModernHero from "../components/ModernHero";
 import ModernAbout from "../components/ModernAbout";
@@ -8,10 +8,14 @@ import ParallaxTestimonials from "../components/ParallaxTestimonials";
 import ModernProcess from "../components/ModernProcess";
 import CtaSection from "../components/CtaSection";
 import ModernFooter from "../components/ModernFooter";
-import ClientFeedbackSection from "../components/ClientFeedbackSection";
+import ClientFeedbackSection, { TestimonialsContext } from "../components/ClientFeedbackSection";
 import { AnimatePresence } from "framer-motion";
+import { Testimonial } from "../components/ReviewSubmission";
 
 const Index = () => {
+  // State for testimonials
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+
   // Preload images for better performance
   useEffect(() => {
     const preloadImages = [
@@ -29,22 +33,37 @@ const Index = () => {
       const img = new Image();
       img.src = imageSrc;
     });
+    
+    // Load testimonials from localStorage
+    const savedTestimonials = localStorage.getItem('testimonials');
+    if (savedTestimonials) {
+      try {
+        const parsedTestimonials = JSON.parse(savedTestimonials);
+        if (Array.isArray(parsedTestimonials)) {
+          setTestimonials(parsedTestimonials);
+        }
+      } catch (error) {
+        console.error('Error parsing saved testimonials:', error);
+      }
+    }
   }, []);
 
   return (
-    <AnimatePresence mode="wait">
-      <div className="min-h-screen">
-        <Navbar />
-        <ModernHero />
-        <ModernAbout />
-        <AmbientGallery />
-        <ParallaxTestimonials />
-        <ClientFeedbackSection />
-        <ModernProcess />
-        <CtaSection />
-        <ModernFooter />
-      </div>
-    </AnimatePresence>
+    <TestimonialsContext.Provider value={{ testimonials, setTestimonials }}>
+      <AnimatePresence mode="wait">
+        <div className="min-h-screen">
+          <Navbar />
+          <ModernHero />
+          <ModernAbout />
+          <AmbientGallery />
+          <ParallaxTestimonials userTestimonials={testimonials} />
+          <ClientFeedbackSection />
+          <ModernProcess />
+          <CtaSection />
+          <ModernFooter />
+        </div>
+      </AnimatePresence>
+    </TestimonialsContext.Provider>
   );
 };
 

@@ -1,8 +1,14 @@
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { Star } from "lucide-react";
+import { Testimonial } from "./ReviewSubmission";
 
-const ParallaxTestimonials = () => {
+interface ParallaxTestimonialsProps {
+  userTestimonials?: Testimonial[];
+}
+
+const ParallaxTestimonials: React.FC<ParallaxTestimonialsProps> = ({ userTestimonials = [] }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -11,6 +17,54 @@ const ParallaxTestimonials = () => {
   
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.8], [0, 1, 0]);
+
+  // Combine default testimonials with user submitted ones
+  const [displayTestimonials, setDisplayTestimonials] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    // Default testimonials if no user submitted ones are available
+    const defaultTestimonials = [
+      {
+        id: "1",
+        text: "Fiquei impressionada com a qualidade do armário da cozinha! Trabalho impecável e atendimento muito atencioso.",
+        name: "Ana",
+        location: "Campo Grande",
+        rating: 5
+      },
+      {
+        id: "2",
+        text: "Muito caprichoso e atencioso. Entregou antes do prazo e o móvel ficou incrível! Superou minhas expectativas.",
+        name: "Rafael",
+        location: "Campo Grande",
+        rating: 5
+      },
+      {
+        id: "3",
+        text: "Fiz o projeto do meu home office com a Marcenaria Pinheiro. O resultado ficou perfeito, exatamente como eu imaginava.",
+        name: "Carla",
+        location: "Campo Grande",
+        rating: 5
+      },
+    ];
+
+    // If we have user testimonials, prioritize the most recent ones
+    if (userTestimonials.length > 0) {
+      // Get the two most recent user testimonials
+      const recentUserTestimonials = [...userTestimonials]
+        .sort((a, b) => parseInt(b.id) - parseInt(a.id))
+        .slice(0, 2);
+      
+      // Combine with one default testimonial if needed
+      const combined = [
+        ...recentUserTestimonials,
+        ...defaultTestimonials.slice(0, Math.max(0, 3 - recentUserTestimonials.length))
+      ];
+      
+      setDisplayTestimonials(combined.slice(0, 3));
+    } else {
+      setDisplayTestimonials(defaultTestimonials);
+    }
+  }, [userTestimonials]);
 
   // Animations for testimonial cards
   const cardVariants = {
@@ -24,7 +78,7 @@ const ParallaxTestimonials = () => {
 
   // Calculate rotation for 3D effect
   const rotate = (index: number) => {
-    const middle = Math.floor(testimonials.length / 2);
+    const middle = Math.floor(displayTestimonials.length / 2);
     const distance = index - middle;
     return distance * 5; // Rotate by 5 degrees per position from middle
   };
@@ -69,9 +123,9 @@ const ParallaxTestimonials = () => {
           <div className="absolute inset-0 flex items-center justify-center">
             {/* 3D Testimonial Carousel */}
             <div className="relative w-full max-w-5xl h-full">
-              {testimonials.map((testimonial, index) => (
+              {displayTestimonials.map((testimonial, index) => (
                 <motion.div
-                  key={index}
+                  key={testimonial.id}
                   className="absolute top-1/2 left-1/2 w-full max-w-md"
                   initial="hidden"
                   whileInView="visible"
@@ -81,15 +135,15 @@ const ParallaxTestimonials = () => {
                   style={{
                     translateX: `-50%`,
                     translateY: `-50%`,
-                    zIndex: testimonials.length - index,
+                    zIndex: displayTestimonials.length - index,
                     rotateY: rotate(index) + 'deg',
-                    translateZ: (-100 * Math.abs(index - Math.floor(testimonials.length / 2))) + 'px'
+                    translateZ: (-100 * Math.abs(index - Math.floor(displayTestimonials.length / 2))) + 'px'
                   }}
                 >
                   <div className="bg-white p-8 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform-gpu backface-hidden border border-wood-light/10">
                     <div className="flex items-center mb-6">
                       <div className="flex">
-                        {[...Array(5)].map((_, i) => (
+                        {[...Array(testimonial.rating)].map((_, i) => (
                           <motion.svg 
                             key={i} 
                             viewBox="0 0 24 24" 
@@ -153,24 +207,5 @@ const ParallaxTestimonials = () => {
     </section>
   );
 };
-
-// Testimonials Data
-const testimonials = [
-  {
-    text: "Fiquei impressionada com a qualidade do armário da cozinha! Trabalho impecável e atendimento muito atencioso.",
-    name: "Ana",
-    location: "Campo Grande",
-  },
-  {
-    text: "Muito caprichoso e atencioso. Entregou antes do prazo e o móvel ficou incrível! Superou minhas expectativas.",
-    name: "Rafael",
-    location: "Campo Grande",
-  },
-  {
-    text: "Fiz o projeto do meu home office com a Marcenaria Pinheiro. O resultado ficou perfeito, exatamente como eu imaginava.",
-    name: "Carla",
-    location: "Campo Grande",
-  },
-];
 
 export default ParallaxTestimonials;

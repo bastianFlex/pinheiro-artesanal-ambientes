@@ -76,6 +76,22 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ onAddTestimonial })
         title: "Avaliação enviada!",
         description: "Agradecemos por compartilhar sua experiência com a Marcenaria Pinheiro.",
       });
+      
+      // Update localStorage with new testimonials
+      const existingTestimonials = localStorage.getItem('testimonials');
+      let updatedTestimonials = [];
+      
+      if (existingTestimonials) {
+        try {
+          updatedTestimonials = JSON.parse(existingTestimonials);
+        } catch (e) {
+          updatedTestimonials = [];
+        }
+      }
+      
+      updatedTestimonials = [newTestimonial, ...updatedTestimonials];
+      localStorage.setItem('testimonials', JSON.stringify(updatedTestimonials));
+
       form.reset();
       setIsSubmitting(false);
     }, 1500);

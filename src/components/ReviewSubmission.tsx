@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { MessageSquare, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { 
@@ -18,6 +17,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+// Define our testimonial type for storing reviews
+export type Testimonial = {
+  id: string;
+  text: string;
+  name: string;
+  location: string;
+  rating: number;
+}
+
+// Define props to receive and update testimonials
+interface ReviewSubmissionProps {
+  onAddTestimonial: (testimonial: Testimonial) => void;
+}
+
 const reviewSchema = z.object({
   name: z.string().min(2, { message: "Nome deve ter pelo menos 2 caracteres" }),
   location: z.string().min(2, { message: "Localização é obrigatória" }),
@@ -27,7 +40,7 @@ const reviewSchema = z.object({
 
 type ReviewFormValues = z.infer<typeof reviewSchema>;
 
-const ReviewSubmission = () => {
+const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ onAddTestimonial }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(0);
   const { toast } = useToast();
@@ -45,8 +58,20 @@ const ReviewSubmission = () => {
   const onSubmit = (data: ReviewFormValues) => {
     setIsSubmitting(true);
     
+    // Create new testimonial object from form data
+    const newTestimonial: Testimonial = {
+      id: Date.now().toString(),
+      text: data.comment,
+      name: data.name,
+      location: data.location,
+      rating: data.rating
+    };
+    
     // In a real app, this would send data to a backend
     setTimeout(() => {
+      // Add the testimonial to the list via the callback
+      onAddTestimonial(newTestimonial);
+      
       toast({
         title: "Avaliação enviada!",
         description: "Agradecemos por compartilhar sua experiência com a Marcenaria Pinheiro.",
